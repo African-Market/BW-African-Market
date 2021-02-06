@@ -2,15 +2,23 @@ import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import * as yup from 'yup';
+import {useHistory} from 'react-router-dom';
 
-const SignupDiv = styled.div`
-    background-color: rgba(10, 85, 35, .7);
-    display: flex;
-    flex-direction: column;
-    width: 350px;
-    height: 45vh;
-    padding: 40px;
-    color: white;
+
+const RegisterDiv = styled.div`
+    
+
+    form{
+        background-color: rgba(10, 85, 35, .7);
+        border: 1px solid rgba(5,5,5, .5);
+        display: flex;
+        flex-direction: column;
+        justify-content:space-around;
+        width: 350px;
+        height: 40vh;
+        padding: 35px;
+        color: white;
+    }
 
     h2 {
         font-size: 3rem;
@@ -20,8 +28,6 @@ const SignupDiv = styled.div`
         display: flex;
         flex-direction: column;
         text-align: right;
-        justify-content: space-evenly;
-        height:100%;
     }
 
     .inputs label input {
@@ -36,18 +42,24 @@ const SignupDiv = styled.div`
         height:7vh;
         display:flex;
         flex-direction: column;
+        align-items:center;
         justify-content: space-between;
     }
 
     button {
         font-size: 2rem;
+        width:10vw;
+    }
+
+    .error{
+        color: crimson;
     }
 
 `
 
+export default function Register (props) {
 
-export default function Signup () {
-
+    const history = useHistory();
    
     const emptyState = () => ({
         businessName: "",
@@ -67,22 +79,24 @@ export default function Signup () {
 
     const [buttonDisabled, setButtonDisabled] = useState(true)
 
- 
+
 
     const formSubmit = (e) => {
         e.preventDefault();
         console.log("submitted")
         axios
-            .post("https://reqres.in/api/africanmarketplace", )
+            .post("https://africanmarketplaceapinodejs.herokuapp.com/register", formState)
             .then(res => {
-                console.log(formState)
+                console.log(res.data)
                 setFormState(emptyState())
-            })
+                history.push(`/profile/${res.data.businessName}`)
+            })       
             .catch(err => console.log("ERROR", err))
     }
 
+
     const formSchema = yup.object().shape({
-        businesName: yup
+        businessName: yup
             .string()
             .required("Business name is required"),
         email: yup
@@ -92,7 +106,7 @@ export default function Signup () {
         password: yup
             .string()
             .required("Password is required")
-            .min(6, "Passwords must be at least 6 characters long."),
+            .min(6, "Password must be at least 6 characters long."),
         terms: yup
             .boolean()
             .oneOf([true], "You must accept Terms and Conditions")
@@ -102,60 +116,51 @@ export default function Signup () {
     formSchema.isValid(formState).then(valid => {
       setButtonDisabled(!valid);
     });
-  }, [formState]);
+  }, [formSchema, formState]);
 
     const validate = (e)=> {
-
-  // yup.reach will allow us to "reach" into the schema and test only one part.
-    // We give reach the schema as the first argument, and the key we want to test as the second.
-    yup
-    .reach(formSchema, e.target.name)
-    //we can then run validate using the value
-    .validate(e.target.value)
-    // if the validation is successful, we can clear the error message
-    .then(valid => {
-      setErrors({
-        ...errors,
-        [e.target.name]: ""
-      });
-    })
-    /* if the validation is unsuccessful, we can set the error message to the message 
-      returned from yup (that we created in our schema) */
-    .catch(err => {
-      setErrors({
-        ...errors,
-        [e.target.name]: err.errors[0]
-      });
-    });
-
-  // Wether or not our validation was successful, we will still set the state to the new value as the user is typing
-  setFormState({
-    ...formState,
-    [e.target.name]: e.target.value
-  });
+        yup
+            .reach(formSchema, e.target.name)
+            .validate(e.target.value)
+            .then(valid => {
+                setErrors({
+                ...errors,
+                [e.target.name]: ""
+             });
+            })
+            .catch(err => {
+                setErrors({
+                    ...errors,
+                [   e.target.name]: err.errors[0]
+                });
+            });
     }
 
-     const changeHandler = (e) => {
-        e.persist()
+    const changeHandler = (e) => {
+        e.persist();
+        validate(e);
         const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
         setFormState({...formState, [e.target.name] : value})
     }
 
 
     return ( 
-        <SignupDiv className="signUpDiv">
+        <RegisterDiv >
             <form onSubmit={formSubmit}>
-                <h2>Sign Up</h2>
+                <h2>Register</h2>
                 <div className="inputs">
                     <label htmlFor="businessName">Business Name {""}
-                        <input name="businessName" id="businessName" type="text" placeholder="Enter your business name" value={formState.businessName} onChange={changeHandler}/>
+                        <input name="businessName" id="businessName" type="text" placeholder="Enter your business name" value={formState.businessName} onChange={changeHandler}/>   
+                        <p className="error">{errors.businessName}</p>      
                     </label>
                     <label htmlFor="email">Email {""}
                         <input name="email" id="email" type="text" placeholder="Enter your email" value={formState.email} onChange={changeHandler}/>
+                        <p className="error">{errors.email}</p>
                     </label>
                     <label htmlFor="password">Password {""}
-                        <input name="password" id="password" type="text" placeholder="Enter your passsword" value={formState.password} onChange={changeHandler}/>
-                    </label>                  
+                        <input name="password" id="password" type="password" placeholder="Enter your passsword" value={formState.password} onChange={changeHandler}/>
+                        <p className="error">{errors.password}</p>
+                    </label>             
                 </div>
                 <div className="submit">
                     <label htmlFor="terms">Accept Terms & Conditions
@@ -164,9 +169,7 @@ export default function Signup () {
                     <button disabled={buttonDisabled}>Submit</button>
                 </div>            
             </form> 
-        </SignupDiv>
-        
-
+        </RegisterDiv>
     )
 }
 

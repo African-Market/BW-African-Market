@@ -7,7 +7,6 @@ const HomeDiv = styled.div`
     display: flex;
     align-items: center;
     height: 60vh;
- 
 
 `
 
