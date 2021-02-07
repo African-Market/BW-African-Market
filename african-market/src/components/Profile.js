@@ -33,7 +33,7 @@ export default function Profile (props) {
     let business_name = params.id;
 
     axios
-        .get(`http://localhost:8080/users/${business_name}`)
+        .get(`https://africanmarketplaceapinodejs.herokuapp.com/items/${business_name}`)
         .then(res=> {
   
             setUser(res.data.user)

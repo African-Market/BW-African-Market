@@ -75,7 +75,7 @@ export default function Login () {
 
         console.log("submitted")
         axios   
-            .post("http://localhost:8080/login", formState)
+            .post("https://africanmarketplaceapinodejs.herokuapp.com/login", formState)
             .then(res => {
                 console.log(res);
                 history.push(`/profile/${res.data.user.business_name}`)

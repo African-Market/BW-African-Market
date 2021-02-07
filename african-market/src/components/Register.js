@@ -85,7 +85,7 @@ export default function Register (props) {
         e.preventDefault();
         console.log("submitted")
         axios
-            .post("http://localhost:8080/register", formState)
+            .post("https://africanmarketplaceapinodejs.herokuapp.com/register", formState)
             .then(res => {
                 console.log(res)
                 setFormState(emptyState())
