@@ -62,7 +62,7 @@ export default function Register (props) {
     const history = useHistory();
    
     const emptyState = () => ({
-        businessName: "",
+        business_name: "",
         email: "",
         password: "",
         terms: false,
@@ -71,7 +71,7 @@ export default function Register (props) {
     const [formState, setFormState] = useState(emptyState());
 
     const [errors, setErrors] = useState({
-        businessName: "",
+        business_name: "",
         email: "",
         password: "",
         terms: "",
@@ -85,18 +85,18 @@ export default function Register (props) {
         e.preventDefault();
         console.log("submitted")
         axios
-            .post("https://africanmarketplaceapinodejs.herokuapp.com/register", formState)
+            .post("http://localhost:8080/register", formState)
             .then(res => {
-                console.log(res.data)
+                console.log(res)
                 setFormState(emptyState())
-                history.push(`/profile/${res.data.businessName}`)
+                history.push(`/profile/${res.data.user.business_name}`)
             })       
             .catch(err => console.log("ERROR", err))
     }
 
 
     const formSchema = yup.object().shape({
-        businessName: yup
+        business_name: yup
             .string()
             .required("Business name is required"),
         email: yup
@@ -149,9 +149,9 @@ export default function Register (props) {
             <form onSubmit={formSubmit}>
                 <h2>Register</h2>
                 <div className="inputs">
-                    <label htmlFor="businessName">Business Name {""}
-                        <input name="businessName" id="businessName" type="text" placeholder="Enter your business name" value={formState.businessName} onChange={changeHandler}/>   
-                        <p className="error">{errors.businessName}</p>      
+                    <label htmlFor="business_name">Business Name {""}
+                        <input name="business_name" id="business_name" type="text" placeholder="Enter your business name" value={formState.business_name} onChange={changeHandler}/>   
+                        <p className="error">{errors.business_name}</p>      
                     </label>
                     <label htmlFor="email">Email {""}
                         <input name="email" id="email" type="text" placeholder="Enter your email" value={formState.email} onChange={changeHandler}/>

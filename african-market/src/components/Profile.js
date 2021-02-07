@@ -26,22 +26,26 @@ h3 {
 
 export default function Profile (props) {
 
-    const [ business, setBusiness ] = useState();
+    const [ user, setUser ] = useState({});
 
     const params = useParams();
 
-    let businessName = params.id;
+    let business_name = params.id;
 
-    // axios
-    //     .get(`https://reqres.in/api/africanmarketplace/`)
-    //     .then(res=> console.log(res))
+    axios
+        .get(`http://localhost:8080/users/${business_name}`)
+        .then(res=> {
+  
+            setUser(res.data.user)
+        } )
+        .catch(err => console.log("error", err))
 
 
     return (
         <HomeDiv>
             <h2>Profile</h2>
-            <h3>Business Name</h3>
-            <p>Email</p>
+            <h3>{user.business_name}</h3>
+            <p>{user.email}</p>
         </HomeDiv>
         
     )

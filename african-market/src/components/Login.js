@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import {useHistory} from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 import * as yup from 'yup';
@@ -49,6 +50,8 @@ const LoginDiv = styled.div`
 
 
 export default function Login () {
+    const history = useHistory();
+
     const [formState, setFormState ] = useState({
         email: "",
         password: ""
@@ -57,6 +60,8 @@ export default function Login () {
     const [errors, setErrors] = useState({
         email: "",
         password: "",
+        invalidLogin: false,
+        invalidLoginError: ""
     })
 
     const changeHandler = e => {
@@ -70,11 +75,15 @@ export default function Login () {
 
         console.log("submitted")
         axios   
-            .post("https://africanmarketplaceapinodejs.herokuapp.com/login")
+            .post("http://localhost:8080/login", formState)
             .then(res => {
-                console.log(res)
+                console.log(res);
+                history.push(`/profile/${res.data.user.business_name}`)
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.log(err)
+                setErrors({...errors, invalidLogin: true})
+            })
     }
 
     const [buttonDisabled, setButtonDisabled] = useState(true)
@@ -87,7 +96,10 @@ export default function Login () {
         password: yup
         .string()
         .required("Password is required")
-        .min(6, "Password must be at least 6 characters long")
+        .min(6, "Password must be at least 6 characters long"),
+        invalidLogin: yup
+        .boolean()
+        .oneOf([true], "Invalid Login")
     })
 
     useEffect(() => {
@@ -97,6 +109,7 @@ export default function Login () {
       }, [formSchema, formState]);
 
       const validate = (e)=> {
+          console.log(e.target.name)
         yup
             .reach(formSchema, e.target.name)
             .validate(e.target.value)
@@ -107,11 +120,17 @@ export default function Login () {
              });
             })
             .catch(err => {
-                setErrors({
+                if ( e.target.name == "invalidLogin") {
+                    setErrors({...errors, invalidLoginError: err.errors[0]})
+                } else {
+                    setErrors({
                     ...errors,
-                [   e.target.name]: err.errors[0]
+                    [e.target.name]: err.errors[0]
                 });
+                }  
+                console.log(errors)
             });
+
     }
 
     return (
@@ -130,6 +149,7 @@ export default function Login () {
                        <p className="error">{errors.password}</p>
                     </label>      
                 </div> 
+                {errors.invalidLogin? <p className="error">Invalid Login</p>:null}
                 <button disabled={buttonDisabled}>Submit</button>  
             </form>
         </LoginDiv>
