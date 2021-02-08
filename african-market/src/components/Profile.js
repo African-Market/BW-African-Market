@@ -24,7 +24,7 @@ h3 {
 `
 
 
-export default function Profile (props) {
+export default function Profile () {
 
     const [ user, setUser ] = useState({});
 
@@ -33,9 +33,8 @@ export default function Profile (props) {
     let business_name = params.id;
 
     axios
-        .get(`https://africanmarketplaceapinodejs.herokuapp.com/items/${business_name}`)
+        .get(`http://localhost:8080/users/${business_name}`)
         .then(res=> {
-  
             setUser(res.data.user)
         } )
         .catch(err => console.log("error", err))
