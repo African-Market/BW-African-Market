@@ -1,5 +1,41 @@
+h1 {
+  color: rgb(255, 255, 255);
+  font-size: 4rem;
+}
+
+.navlinks {
+  display: flex;
+  width: 30vw;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navlinks a {
+  color: white;
+  font-size: 2rem;
+  text-decoration: none;
+}
+
+.routeDiv {
+  display: flex;
+  justify-content: center;
+}
+
 .App {
   text-align: center;
+  background: url("./assets/banner.jpg") no-repeat;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position-x: center;
+  display: flex;
+  flex-direction: column;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.App nav {
+  display: flex;
+  justify-content: space-around;
 }
 
 .App-logo {
